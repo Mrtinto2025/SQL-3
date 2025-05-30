@@ -94,14 +94,18 @@ CREATE FUNCTION calcularmonto(
 RETURNS DECIMAL(10,2)
 DETERMINISTIC
 BEGIN
-    DECLARE horas_estadia INT;
-    DECLARE dias_estadia INT;
+    DECLARE horas_total INT;
+    DECLARE dias_completos INT;
+    DECLARE horas_restantes INT;
     DECLARE monto_total DECIMAL(10,2);
     DECLARE tarifa_hora DECIMAL(10,2);
     DECLARE tarifa_dia DECIMAL(10,2);
     #...
-    SET horas_estadia = TIMESTAMPDIFF(HOUR, p_fecha_inicio, p_fecha_fin);
-    SET dias_estadia = TIMESTAMPDIFF(DAY, p_fecha_inicio, p_fecha_fin);
+    SET horas_total = TIMESTAMPDIFF(HOUR, p_fecha_inicio, p_fecha_fin);
+  
+	IF horas_total <1 THEN
+    set horas_total=1;
+    END IF ;
     # tarifa segun  la categoria 
     #moto 
     IF p_id_categoria = 3 THEN
@@ -117,23 +121,27 @@ BEGIN
         SET tarifa_dia = 25000.00;
     END IF;
     #monto total
-    IF dias_estadia >= 1 THEN
-        SET monto_total = (dias_estadia * tarifa_dia) + 
-                         (GREATEST(horas_estadia - (dias_estadia * 24), 0) * tarifa_hora);
-    ELSE
-        SET monto_total = horas_estadia * tarifa_hora;
-    END IF;
-    
-    RETURN monto_total;
+SET dias_completos= FLOOR(horas_total/24);
+SET horas_restantes=horas_total%24;
+
+IF(horas_restantes*tarifa_hora) > tarifa_dia THEN
+SET dias_completos = dias_completos +1;
+SET horas_restantes=0;
+END IF ;
+SET monto_total = (dias_completos * tarifa_dia) + (horas_restantes * tarifa_hora);
+
+RETURN monto_total;
 END//
 
 DELIMITER ;
+
 # generar factura al finalizar reserva
 DELIMITER //
 
 CREATE PROCEDURE generarfactura(
     IN p_id_reserva INT,
-    OUT p_id_factura INT
+    OUT p_id_factura INT,
+    OUT p_minutos_estadia INT
 )
 BEGIN
     DECLARE v_id_cliente INT;
@@ -148,12 +156,14 @@ BEGIN
     FROM reservas r
     JOIN clientes c ON r.ID_clientes = c.ID_clientes
     JOIN vehiculos v ON c.ID_clientes = v.ID_clientes
-    WHERE r.ID_reserva = p_id_reserva;
+    WHERE r.ID_reserva = p_id_reserva
+    LIMIT 1;
     # calcula monto 
-    SET v_monto = fn_calcular_monto(v_fecha_inicio, v_fecha_fin, v_id_categoria);
+    SET v_monto = calcularmonto(v_fecha_inicio, v_fecha_fin, v_id_categoria);
+	SET p_minutos_estadia = minutos(v_fecha_inicio);
     #crea la factura
-    INSERT INTO factura (montopagar, ID_clientes) 
-    VALUES (v_monto, v_id_cliente);
+    INSERT INTO factura (montopagar, ID_clientes,fechahora_generacion) 
+    VALUES (v_monto, v_id_cliente,NOW());
     
     SET p_id_factura = LAST_INSERT_ID();
     #actualiza la factura 
@@ -198,3 +208,17 @@ END//
 DELIMITER ;
 #p_ : parametros
 #v_ : variables 
+DELIMITER //
+
+CREATE FUNCTION minutos(
+    fech_ini TIMESTAMP
+) 
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE min INT;
+    SET min = TIMESTAMPDIFF(MINUTE, fech_ini, NOW());
+    RETURN min;
+END//
+
+DELIMITER ;

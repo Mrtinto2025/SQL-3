@@ -61,13 +61,16 @@ CREATE TABLE vehiculos (
 CREATE TABLE factura (
     ID_factura INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     montopagar DECIMAL(10,2),
+    fechahora_generacion DATETIME,
     ID_clientes INT
 );
 
 CREATE TABLE reservas (
     ID_reserva INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    fechainicio DATE,
-    fechafin DATE,
+    fechainicio DATETIME,
+    fechafin DATETIME,
+    horainicio TIME,
+    horafin TIME,
     ID_factura INT,
     ID_espacios INT,
     ID_clientes INT
