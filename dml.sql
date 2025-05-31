@@ -81,8 +81,8 @@ SELECT @mensaje;
 SELECT * FROM vehiculos;
 
 #creamos reserva para el primer carro esta da inicio 27/05 y da fin el 29/05 tambien hora
-INSERT INTO reservas (fechainicio,horainicio, fechafin,horafin, ID_espacios, ID_clientes)
-VALUES (DATE_SUB(CURDATE(), INTERVAL 2 DAY),'8:00:00',CURDATE(),'18:30:00', 1, 1);
+INSERT INTO reservas (fechainicio, horainicio, fechafin, horafin, ID_espacios, ID_clientes)
+VALUES (DATE_SUB(CURDATE(), INTERVAL 2 DAY),'8:00:00',CURDATE(),'18:30:00',1, 1);
 
 # actualizar el cliente con la reserva
 UPDATE clientes SET ID_reserva = LAST_INSERT_ID() WHERE ID_clientes = 1;
@@ -110,12 +110,13 @@ SELECT * FROM tarifas;
 SELECT minutos(DATE_SUB(NOW(), INTERVAL 30 MINUTE)) AS minutos_transcurridos;
 #este prueba con fechas ya existentes
 SELECT 
-    r.ID_reserva,
-    r.fechainicio,
-    r.horainicio,
-    minutos(CONCAT(r.fechainicio, ' ', r.horainicio)) AS minutos_desde_inicio
+r.ID_reserva,
+r.fechainicio,
+r.horainicio,
+minutos(TIMESTAMP(r.fechainicio, r.horainicio)) AS minutos_desde_inicio
 FROM 
-    reservas r;
+reservas r
+LIMIT 1000;
 # hora exacta
 SELECT minutos(DATE_SUB(NOW(), INTERVAL 1 HOUR)) AS deberia_ser_60;
 #día exacto
@@ -124,6 +125,6 @@ SELECT minutos(DATE_SUB(NOW(), INTERVAL 1 DAY)) AS deberia_ser_1440;
 INSERT INTO reservas (fechainicio, horainicio, ID_espacios, ID_clientes)
 VALUES (CURDATE(), DATE_SUB(CURTIME(), INTERVAL 45 MINUTE), 1, 1);
 #probamos con esta reserva
-SELECT minutos(CONCAT(fechainicio, ' ', horainicio)) AS minutos_ocupacion
+SELECT minutos(TIMESTAMP(fechainicio, horainicio)) AS minutos_ocupacion
 FROM reservas
 WHERE ID_reserva = LAST_INSERT_ID();
