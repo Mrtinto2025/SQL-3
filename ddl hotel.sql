@@ -1,3 +1,4 @@
+DROP DATABASE IF EXISTS elhotel;
 create database  elhotel;
 use elhotel;
 
@@ -11,9 +12,13 @@ correo varchar(60)
 
 create table dormitorios(
 iddormitorio int primary key auto_increment,
-tipo enum('1 persona', '2 personas', '3 personas', '4 personas'),
 disponibles int not null default 0,
 costonoche decimal(10,2)not null
+);
+
+create table tipohabitacion(
+idtipohabitacion int primary key auto_increment,
+descripcion varchar(40)
 );
 
 create table reservas(
@@ -25,6 +30,9 @@ fechacheckout date,
 costofinal decimal(10,2)
 );
 
+alter table dormitorios
+add column idtipohabitacion int;
+
 alter table reservas
 add constraint fk_dormitorio
 foreign key (iddormitorio) references dormitorios(iddormitorio);
@@ -32,6 +40,23 @@ foreign key (iddormitorio) references dormitorios(iddormitorio);
 alter table reservas
 add column idcliente int;
 
-ALTER TABLE reservas
-ADD CONSTRAINT fk_cliente
-FOREIGN KEY (idcliente)  REFERENCES cliente(idcliente);
+alter table  reservas
+add constraint fk_cliente
+foreign key (idcliente)  references cliente(idcliente);
+
+alter table  dormitorios 
+add constraint fk_tipohabitacion
+foreign key (idtipohabitacion)  references tipohabitacion(idtipohabitacion);
+
+/*Esta tabla lo que hace es registrar las reservas*/
+create table if not exists logs_reservas(
+idlog int primary key auto_increment,
+idreserva int not null,
+mensaje varchar(100) not null,
+fecha timestamp default current_timestamp
+);
+
+alter table logs_reservas
+add constraint fk_reserva
+foreign key (idreserva) references reservas(idreserva); 
+
