@@ -1,4 +1,14 @@
 INSERT INTO tipohabitacion (descripcion) VALUES('1 persona'),('2 personas'),('3 personas'),('4 personas');
+INSERT INTO dormitoriodisponible (iddormitorio, disponibles)
+SELECT iddormitorio, 
+       CASE 
+           WHEN idtipohabitacion = 1 THEN 5  
+           WHEN idtipohabitacion = 2 THEN 8  
+           WHEN idtipohabitacion = 3 THEN 4  
+           WHEN idtipohabitacion = 4 THEN 2  
+       END
+FROM dormitorios;
+
 INSERT INTO cliente (nombre, apellido, telefono, correo) VALUES('Juan', 'Pérez', '555-123-4567', 'juan.perez@example.com'),('Ana', 'Gómez', '555-234-5678', 'ana.gomez@example.com'),
 ('Carlos', 'Ramírez', '555-345-6789', 'carlos.ramirez@example.com'),
 ('Laura', 'Martínez', '555-456-7890', 'laura.martinez@example.com'),
@@ -17,6 +27,12 @@ SELECT * FROM dormitorios WHERE idtipohabitacion = '2 personas' AND disponibles 
 SELECT * FROM elhotel.cliente;
 SELECT * FROM elhotel.dormitorios;
 SELECT * FROM tipohabitacion;
+SELECT * FROM elhotel.dormitoriodisponible;
+SELECT * FROM elhotel.registro;
 SELECT * FROM logs_reservas;
 SELECT * FROM cliente WHERE idcliente = 1;
 
+SELECT d.iddormitorio, t.descripcion, dd.disponibles
+FROM dormitorios d
+JOIN tipohabitacion t ON d.idtipohabitacion = t.idtipohabitacion
+JOIN dormitoriodisponible dd ON d.iddormitorio = dd.iddormitorio;

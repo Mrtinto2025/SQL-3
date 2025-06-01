@@ -12,7 +12,6 @@ correo varchar(60)
 
 create table dormitorios(
 iddormitorio int primary key auto_increment,
-disponibles int not null default 0,
 costonoche decimal(10,2)not null
 );
 
@@ -21,6 +20,16 @@ idtipohabitacion int primary key auto_increment,
 descripcion varchar(40)
 );
 
+create table dormitoriodisponible(
+iddisponible int primary key auto_increment,
+disponibles int not null default 0,
+iddormitorio int not null
+);
+
+alter table dormitoriodisponible
+add constraint fk_dormitoriodisponible
+foreign key (iddormitorio) references dormitorios(iddormitorio);
+
 create table reservas(
 idreserva int primary key auto_increment,
 iddormitorio int not null,
@@ -28,6 +37,16 @@ fechareserva  date,
 fechacheckin date,
 fechacheckout date,
 costofinal decimal(10,2)
+);
+
+create table if not exists registro(
+idregistro int primary key auto_increment,
+fechahora timestamp default current_timestamp,
+tipoevento varchar(50) not null,
+idafectado int,
+tablaafectada varchar(40),
+descripcion varchar(200),
+usuario varchar(50) default user()
 );
 
 alter table dormitorios
