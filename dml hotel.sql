@@ -1,5 +1,10 @@
 INSERT INTO tipohabitacion (descripcion) VALUES('1 persona'),('2 personas'),('3 personas'),('4 personas');
-INSERT INTO cliente (nombre, apellido) VALUES('Juan', 'Pérez'), ('Ana', 'Gómez'),('Carlos', 'Ramírez'),('Laura', 'Martínez'),('Andrés', 'Gómez'),('Sofía', 'López'),('Miguel', 'Torres');
+INSERT INTO cliente (nombre, apellido, telefono, correo) VALUES('Juan', 'Pérez', '555-123-4567', 'juan.perez@example.com'),('Ana', 'Gómez', '555-234-5678', 'ana.gomez@example.com'),
+('Carlos', 'Ramírez', '555-345-6789', 'carlos.ramirez@example.com'),
+('Laura', 'Martínez', '555-456-7890', 'laura.martinez@example.com'),
+('Andrés', 'Gómez', '555-567-8901', 'andres.gomez@example.com'),
+('Sofía', 'López', '555-678-9012', 'sofia.lopez@example.com'),
+('Miguel', 'Torres', '555-789-0123', 'miguel.torres@example.com');
 INSERT INTO dormitorios (idtipohabitacion, disponibles, costonoche) VALUES (1, 5, 100.00),(2, 8, 150.00),(3, 4, 150.00),(4, 2, 140.00);  
 
 
@@ -9,6 +14,9 @@ CALL reserva(3,'1',CURDATE(), '2024-08-25','2024-08-30');
 SELECT * FROM cliente WHERE idcliente =3;
 SELECT * FROM dormitorios WHERE idtipohabitacion = '2 personas' AND disponibles > 0;
 
+SELECT * FROM elhotel.cliente;
+SELECT * FROM elhotel.dormitorios;
+SELECT * FROM tipohabitacion;
 SELECT * FROM logs_reservas;
 SELECT * FROM cliente WHERE idcliente = 1;
-SELECT * FROM tipohabitacion;
+

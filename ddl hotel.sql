@@ -60,3 +60,5 @@ alter table logs_reservas
 add constraint fk_reserva
 foreign key (idreserva) references reservas(idreserva); 
 
+alter table cliente
+add column ultimareserva datetime null default null;
