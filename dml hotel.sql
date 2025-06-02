@@ -1,4 +1,9 @@
+/*este bloque que va de aqui hasta la parte de insrt into dormitorio son los datos que van en cada tabla*/
+
+/*este inser es para los tipos de habitacion*/
 INSERT INTO tipohabitacion (descripcion) VALUES('1 persona'),('2 personas'),('3 personas'),('4 personas');
+
+/*este*/
 INSERT INTO dormitoriodisponible (iddormitorio, disponibles)
 SELECT iddormitorio, 
        CASE 
@@ -15,23 +20,32 @@ INSERT INTO cliente (nombre, apellido, telefono, correo) VALUES('Juan', 'Pérez'
 ('Andrés', 'Gómez', '555-567-8901', 'andres.gomez@example.com'),
 ('Sofía', 'López', '555-678-9012', 'sofia.lopez@example.com'),
 ('Miguel', 'Torres', '555-789-0123', 'miguel.torres@example.com');
-INSERT INTO dormitorios (idtipohabitacion, disponibles, costonoche) VALUES (1, 5, 100.00),(2, 8, 150.00),(3, 4, 150.00),(4, 2, 140.00);  
+
+INSERT INTO dormitorios (idtipohabitacion,costonoche) VALUES (1, 100.00),(2, 150.00),(3, 150.00),(4, 140.00);  
+/*Hata aqui va el bloque para insertar los datos en cada una de las tablas*/
+
+/*estos aplican descuento*/
+CALL reserva(3, 2, '2024-06-01', '2024-06-21', '2024-06-25');
+CALL reserva(5, 3, '2024-05-15', '2024-06-15', '2024-06-18');
+CALL reserva(1, 2, '2024-06-01', '2024-07-15', '2024-07-20');
+/*estos no*/
+CALL reserva(1, 2, '2024-07-10', '2024-07-15', '2024-07-20');
+CALL reserva(2, 1, '2024-06-05', '2024-06-15', '2024-06-17');
+CALL reserva(4, 4, '2024-07-12', '2024-07-15', '2024-07-20');
 
 
-CALL reserva(1, 2, CURDATE(), '2024-07-15', '2024-07-20');
-CALL reserva(3,'1',CURDATE(), '2024-08-25','2024-08-30');
-
-SELECT * FROM cliente WHERE idcliente =3;
-SELECT * FROM dormitorios WHERE idtipohabitacion = '2 personas' AND disponibles > 0;
-
+/*esta parte rectifica los datos de cada tabla*/
 SELECT * FROM elhotel.cliente;
 SELECT * FROM elhotel.dormitorios;
 SELECT * FROM tipohabitacion;
 SELECT * FROM elhotel.dormitoriodisponible;
+/*En estas slection puedes observar si aplicaste con descuento*/
 SELECT * FROM elhotel.registro;
-SELECT * FROM logs_reservas;
-SELECT * FROM cliente WHERE idcliente = 1;
+SELECT * FROM elhotel.reservas;
+SELECT * FROM logs_reservas; /*en especial esta tabla*/
 
+
+/*este join busca la tabla iddormitorio con la columna descripcion y disponible*/
 SELECT d.iddormitorio, t.descripcion, dd.disponibles
 FROM dormitorios d
 JOIN tipohabitacion t ON d.idtipohabitacion = t.idtipohabitacion
